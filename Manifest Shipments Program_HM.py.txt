@@ -1,0 +1,65 @@
+# Hanna Mortazavi
+# Opens the file sample.txt from the test folder on the W: drive
+# a is for append (adds the data)
+Carfile = open('W:\\MGMT58600\\manifest.txt', 'a')
+
+moreitems='Y'
+
+# Need to update manifest txt file: We ask the employee if there is additional shipment info to enter in
+
+moreitems = input('Do you have any new cars to enter? Type "Y" if so or "N" if you do not')
+
+# loops as long as there is additional shipment based on user input
+while moreitems =='Y':
+    CarName = input('What is the car name?')
+    MSRP = float(input('What is the cars MSRP?'))
+    KSMcost = float(input('What is the cost?'))
+    Cartype = input('What is the Car Type Code: Please enter 0 for domestic or 1 for Import?')
+    Commission = input('What is the commission rate code? Please enter A,B or C')
+    a = '\n'
+    Carfile.write(a+CarName + " "+ str(MSRP)+" "+str(KSMcost)+" "+Cartype+" "+Commission)
+    moreitems = input('Do you have any more new cars to enter?')
+
+# Closing the file after writing to it
+Carfile.close()
+
+# importing library to read/write excel files
+import openpyxl
+
+# create dictionary in order to utilize the commission code user input values
+CommissionCodes = {'A': float(.35), 'B': float(.25), 'C': float(.15)}
+
+# creating a new excel file (also known as workbook)
+wb = openpyxl.Workbook()
+sheet = wb.active
+Y
+# reading contents of recently updated txt file
+Carfile = open('W:\\MGMT58600\\manifest.txt')
+Carcontent = Carfile.read()
+
+# creating a list to separate each line of data & closing my file
+salesList = []
+salesList = Carcontent.split('\n')
+Carfile.close()
+
+# processessing the new list in order to report our car name and the newly calculated commission column
+for i in range(len(salesList)):
+    breakup = salesList[i].split() # splits up each following line
+    CarName = breakup[0] # places first item in line in CarName
+    MSRP = float(breakup[1])
+    KSMcost = float(breakup[2])
+    Cartype = int(breakup[3])
+    Commission = (breakup[4])
+    if Cartype > 0: # using if statement to take account account for import multiplier
+        Adj_KSMcost = KSMcost * .9825
+    elif Cartype < 1:
+        Adj_KSMcost = KSMcost * 1
+    adj_gross_profit = float(MSRP) - float(Adj_KSMcost) # calculating our adjusted gross profit based on new cost from the cartype input
+    Commission_value = CommissionCodes[Commission] # reading our dictionary to find the appropriate commission code
+    Potential_commission = float(Commission_value) *float(adj_gross_profit) # calculating our final potential commission
+    r = i + 1 # adjusts the row since workbooks begin at 1
+    sheet.cell(row = r, column =1).value = CarName
+    sheet.cell(row = r, column =2).value = float(round(Potential_commission,2))
+
+# saving our newly created excel file with just carname and our new calculation
+wb.save('W:\\MGMT58600\\commission.xlsx')
